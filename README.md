@@ -1,111 +1,160 @@
-# Test for Consultancy with the D&A Education Team
+# UNICEF Data and Analytics Technical Evaluation
 
 This repository contains the tasks for the **UNICEF Data and Analytics technical evaluation** for education.
 
-------------------------------------------------------------------------
+## Project Overview
 
-## 📋 General Instructions
+This project processes and analyzes UNICEF Maternal, Newborn, and Child Health (MNCH) data along with UN Population Division data.
 
--   Please **clone this repository** to your local computer. Once complete, **push your work to your own GitHub repository** and share the link.
+## Data Sources
 
--   To preserve your anonymity:
+### Primary Data Sources
+- **UNICEF SDMX API**: Maternal and Child Health indicators (MNCH_ANC4, MNCH_SAB)
+- **UN Population Division**: Demographic indicators and country reference data
+- **UNICEF On-track Countries**: Country status and classification data
 
-    -   ❌ Do **not fork** this repository
-    -   ❌ Do **not include your name** anywhere in the submitted assessment
+### Caching Mechanism
+The indicator data is fetched from the UNICEF SDMX API on the first run and cached locally in Excel format. Subsequent runs load data from the cache for improved performance and reduced API calls.
 
--   Please respect the **confidential nature of this test** and **do not share or discuss** its content with others.
+## Project Structure
 
--   Please add the **positions you applied for** in the final output and your readme. Please **do not include your name**.
+```
+Consultancy-Assessment/
+├── 01_rawdata/                    # Raw input files
+│   ├── WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx
+│   └── On-track and off-track countries.xlsx
+├── data/                          # Cached and processed data
+├── output/                        # Exported datasets
+├── scripts/
+│   ├── load.R                     # Data loading and caching
+│   └── transform.R                # Data transformation
+├── user_profile.R                 # Project setup and configuration
+├── run_project.R                  # Main execution script
+└── README.md                      # This file
+```
 
--   The focus of this test is to assess:
+## Data Processing Pipeline
 
-    -   ✅ How you **structure your workflow and code**
-    -   ✅ Your **proficiency in collaborative work environments**
-    -   ✅ Your **commitment to reproducible research practices**
+### 1. Project Setup (`user_profile.R`)
+- Sets up project paths and directories
+- Installs and loads required R packages
+- Validates required input files
+- Provides project status and utility functions
 
--   The **final code and results** must be uploaded to your GitHub repository. Your code should:
+### 2. Data Loading (`scripts/load.R`)
+- Loads UN Population Division data from "Projections" sheet
+- Fetches MNCH data from UNICEF SDMX API (first run) or loads from cache
+- Processes UNICEF on-track countries data
+- Standardizes country codes and names based on UN Population dataset
+- Exports cleaned datasets to output directory
 
-    -   📌 Be **well-documented**
-    -   ⚙️ Be **ready for automated execution**
-    -   📂 Follow best practices in **version control and coding standards**
+### 3. Data Transformation (`scripts/transform.R`)
+- Creates wide format datasets for analysis convenience
+- Builds comprehensive country summary with population and indicator data
+- Computes latest indicator values per country
+- Exports transformed datasets
 
--   You may use **R, Python, or Stata**.
+## Dataset Structures
 
--   **Estimated completion time**: 4 hours
+### countries_summary
+A comprehensive country-level dataset combining multiple sources:
 
--   ⏱️ **You have 48 hours** to complete the assessment and share back your GitHub repository link. Commits made **after 48 hours** will not be considered for evaluation.
+| Column | Description | Source |
+|--------|-------------|---------|
+| `country_code` | 3-letter ISO country code | Standardized across all sources |
+| `country_name` | Country name | UN Population Division |
+| `status_u5mr` | U5MR status classification | UNICEF On-track Countries |
+| `total_population` | Total population (thousands) | UN Population Division |
+| `births` | Annual births (thousands) | UN Population Division |
+| `last_anc4_year` | Most recent year with ANC4 data | UNICEF MNCH Data |
+| `last_anc4_value` | Latest ANC4 coverage value | UNICEF MNCH Data |
+| `last_sab_year` | Most recent year with SAB data | UNICEF MNCH Data |
+| `last_sab_value` | Latest SAB coverage value | UNICEF MNCH Data |
 
-------------------------------------------------------------------------
+### unicef_mnch_data (Tidy Format)
+Long format dataset with one observation per row:
 
-## 🗂️ Exercise Overview
+| Column | Description |
+|--------|-------------|
+| `country_code` | 3-letter ISO country code |
+| `country_name` | Country name (from UN Population) |
+| `indicator` | Indicator code (MNCH_ANC4, MNCH_SAB) |
+| `sex` | Sex classification |
+| `year` | Year of observation |
+| `value` | Indicator value |
 
-### 1. Set up your GitHub repository and workflow
+### unicef_mnch_data_wide (Wide Format)
+Wide format dataset with indicators as columns:
 
-Create a **well-structured repository** with the following:
+| Column | Description |
+|--------|-------------|
+| `country_code` | 3-letter ISO country code |
+| `country_name` | Country name |
+| `year` | Year of observation |
+| `MNCH_ANC4` | ANC4 coverage value |
+| `MNCH_SAB` | SAB coverage value |
 
--   📁 **Folder structure**: Reflect an end-to-end workflow with clear organization that supports reproducibility (e.g., `data`, `documentation`, `scripts`, etc.)
+## Data Standardization
 
--   📝 **README file**:
+The country codes and names are standardized based on the UN Population Division dataset to ensure consistency across all data sources. This standardization:
+- Uses 3-letter ISO country codes as the primary identifier
+- Applies UN Population Division country names throughout
+- Filters out non-country geographic areas (regions, subregions)
+- Ensures data quality through consistent naming conventions
 
-    -   Describe the **structure** of your repository
-    -   Explain the **purpose** of each folder and file
-    -   Include **instructions** on how to reproduce your analysis
+## Usage
 
--   🧩 In the **main directory**, include the following scripts:
+### Quick Start
+1. Ensure all required raw data files are in the `01_rawdata/` directory
+2. Run the main project script:
+   ```r
+   source("run_project.R")
+   ```
 
-    -   `user_profile`: A script or configuration file that ensures your code can run on **any machine**
-    -   `run_project`: A script that executes your **workflow end-to-end**, producing the final output (**PDF, HTML, or DOCX report**)
+### Manual Execution
+1. Load project setup:
+   ```r
+   source("user_profile.R")
+   ```
+2. Load and process data:
+   ```r
+   source("scripts/load.R")
+   ```
+3. Transform and analyze data:
+   ```r
+   source("scripts/transform.R")
+   ```
 
-------------------------------------------------------------------------
+## Output Files
 
-## 🩺 Task
+The project generates the following output files in the `output/` directory:
 
-You are required to **calculate the population-weighted coverage** of two health services:
+### Raw Data Exports
+- `un_population.xlsx` - Processed UN Population Division data
+- `unicef_on_track_countries.xlsx` - Processed on-track countries data
+- `unicef_mnch_data.xlsx` - Processed MNCH data from SDMX
 
--   **Antenatal care (ANC4)**: % of women (aged 15–49) with at least 4 antenatal care visits
--   **Skilled birth attendance (SBA)**: % of deliveries attended by skilled health personnel
+### Transformed Data
+- `unicef_mnch_data_wide.xlsx` - Wide format MNCH data
+- `countries_summary.xlsx` - Comprehensive country-level summary
+- `indicator_summary.xlsx` - Summary statistics by indicator
 
-for countries categorized as **on-track** or **off-track** in achieving under-five mortality targets (as of 2022).
+## Dependencies
 
-------------------------------------------------------------------------
+### Required R Packages
+- `tidyverse`: Data manipulation and analysis
+- `rsdmx`: SDMX data import
+- `readxl`/`writexl`: Excel file handling
+- `httr`/`jsonlite`: API communication
+- `glue`: String interpolation
+- `stringr`: String manipulation
 
-## 📊 Data Sources
+### Required Input Files
+- `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` (UN Population Division)
+- `On-track and off-track countries.xlsx` (UNICEF)
 
--   **Retrieve the following indicators** from the UNICEF Global Data Repository [`LINK`](https://data.unicef.org/resources/data_explorer/unicef_f/?ag=UNICEF&df=GLOBAL_DATAFLOW&ver=1.0&dq=.MNCH_ANC4+MNCH_SAB.&startPeriod=2018&endPeriod=2022) at the country level for the years **2018–2022**:
+## Configuration
 
-    -   **ANC4**: % of women (aged 15–49) with at least 4 antenatal care visits
-    -   **SBA**: % of deliveries attended by skilled health personnel
+The project uses centralized configuration in `user_profile.R`:
+- File paths and caching settings
 
--   Use the following additional files:
-
-    -   📈 **Population Data**: UN World Population Prospects, 2022\
-        *File: `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` (located in `01_rawdata/`)*
-
-    -   **Under-five mortality classification**:
-
-        -   On-track if `Status.U5MR` is `"achieved"` or `"on-track"`
-        -   Off-track if `Status.U5MR` is `"acceleration needed"`\
-            *File: `On-track and off-track countries.xlsx`*
-
-------------------------------------------------------------------------
-
-## 🧪 Steps to Follow
-
-### 1. Data Preparation
-
--   Clean and merge all datasets using **consistent country identifiers**
--   For ANC4 and SBA, **filter for coverage estimates from 2018 to 2022**
-    -   Use the **most recent estimate** within this range per country
-
-### 2. Calculate Population-Weighted Coverage
-
--   For each group (**on-track** and **off-track**), calculate **population-weighted averages** for ANC4 and SBA
--   Use **projected births for 2022** as weights
-
-### 3. Reporting
-
--   Create a **PDF / HTML / DOCX report** including:
-    -   📉 A **visualization** comparing coverage for on-track vs. off-track countries
-    -   🧾 A short paragraph **interpreting the results**, highlighting any caveats or assumptions
-
-------------------------------------------------------------------------
