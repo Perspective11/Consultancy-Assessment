@@ -52,6 +52,7 @@ Consultancy-Assessment/
 - Creates wide format datasets for analysis convenience
 - Builds comprehensive country summary with population and indicator data
 - Computes latest indicator values per country
+- Calculates population-weighted coverage by U5MR status
 - Exports transformed datasets
 
 ## Dataset Structures
@@ -70,6 +71,19 @@ A comprehensive country-level dataset combining multiple sources:
 | `last_anc4_value` | Latest ANC4 coverage value | UNICEF MNCH Data |
 | `last_sab_year` | Most recent year with SAB data | UNICEF MNCH Data |
 | `last_sab_value` | Latest SAB coverage value | UNICEF MNCH Data |
+
+### pop_weighted
+Population-weighted analysis by U5MR status:
+
+| Column | Description |
+|--------|-------------|
+| `status_u5mr` | U5MR status classification (On-track/Off-track) |
+| `pw_anc4` | Population-weighted ANC4 coverage |
+| `pw_sab` | Population-weighted SBA coverage |
+| `total_births` | Total births in the status group |
+| `n_total` | Number of countries in the status group |
+| `n_missing_anc4` | Number of countries missing ANC4 data |
+| `n_missing_sab` | Number of countries missing SBA data |
 
 ### unicef_mnch_data (Tidy Format)
 Long format dataset with one observation per row:
@@ -131,13 +145,14 @@ The project generates the following output files in the `output/` directory:
 
 ### Raw Data Exports
 - `un_population.xlsx` - Processed UN Population Division data
-- `unicef_on_track_countries.xlsx` - Processed on-track countries data
+- `unicef_on_track_countries.xlsx` - Processed on-track countries data (country_code, status_u5mr)
 - `unicef_mnch_data.xlsx` - Processed MNCH data from SDMX
 
 ### Transformed Data
 - `unicef_mnch_data_wide.xlsx` - Wide format MNCH data
 - `countries_summary.xlsx` - Comprehensive country-level summary
 - `indicator_summary.xlsx` - Summary statistics by indicator
+- `pop_weighted.xlsx` - Population-weighted analysis by U5MR status
 
 ## Dependencies
 

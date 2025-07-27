@@ -70,11 +70,34 @@ indicator_summary <- unicef_mnch_data %>%
 
 print(indicator_summary)
 
+head(countries_summary)
+
+pop_weighted <- countries_summary %>%
+  group_by(status_u5mr) %>%
+  summarise(
+    # ANC4 weighted by births in 2022:
+    pw_anc4 = weighted.mean(last_anc4_value,
+                             w = births,
+                             na.rm = TRUE),
+    # SBA weighted by births in 2022:
+    pw_sab  = weighted.mean(last_sab_value,
+                             w = births,
+                             na.rm = TRUE),
+    total_births = sum(births, na.rm = TRUE),
+    n_total       = n(),
+    n_missing_anc4 = sum(is.na(last_anc4_value) | is.na(births)),
+    n_missing_sab  = sum(is.na(last_sab_value)  | is.na(births)),
+    .groups = "drop"
+  )
+
+print(pop_weighted)
+
 # 5. Export transformed datasets ----------------------------------------------
 message("Exporting transformed datasets...")
 write_xlsx(unicef_mnch_data_wide, file.path(OUTPUT_PATH, "unicef_mnch_data_wide.xlsx"))
 write_xlsx(countries_summary, file.path(OUTPUT_PATH, "countries_summary.xlsx"))
 write_xlsx(indicator_summary, file.path(OUTPUT_PATH, "indicator_summary.xlsx"))
+write_xlsx(pop_weighted, file.path(OUTPUT_PATH, "pop_weighted.xlsx"))
 
 # 6. Data inspection and preview ----------------------------------------------
 cat("\n=== Transformed Data Overview ===\n")

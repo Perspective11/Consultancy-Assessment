@@ -48,6 +48,10 @@ un_population <- un_population %>%
     total_population = `Total Population, as of 1 July (thousands)`,
     births = `Births (thousands)`,
     country_name = `Region, subregion, country or area *`
+  ) %>%
+  mutate(
+    total_population = as.numeric(total_population),
+    births = as.numeric(births)
   )
 
 # 3. Load or fetch UNICEF MNCH data -------------------------------------------
@@ -99,8 +103,18 @@ unicef_on_track_countries <- read_excel(file.path(RAW_DATA_PATH, "On-track and o
   select(
     country_code = `ISO3Code`,
     status_u5mr = `Status.U5MR`
-  )
-
+  ) %>%
+  # Convert status_u5mr to on-track or off-track
+  mutate(status_u5mr = case_when(
+    str_to_lower(status_u5mr) %in% c("achieved", "on-track", "on track") ~ "on-track",
+    str_to_lower(status_u5mr) %in% c("acceleration needed", "off-track") ~ "off-track",
+    TRUE ~ NA_character_
+  )) %>%
+  # Replace Kosovo with the updated ISO3 code XKX
+  mutate(country_code = case_when(
+    country_code == "RKS" ~ "XKX",
+    TRUE ~ country_code
+  ))
 # 5. Export cleaned datasets ---------------------------------------------------
 message("Exporting cleaned datasets...")
 write_xlsx(un_population, file.path(OUTPUT_PATH, "un_population.xlsx"))
