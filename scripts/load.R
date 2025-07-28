@@ -25,7 +25,7 @@ DATA_CONFIG <- list(
 # 2. Load UN Population Division data ------------------------------------------
 message("Loading UN Population Division data...")
 un_population <- read_excel(
-  file.path(RAW_DATA_PATH, "WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx"),
+  file.path(DATA_PATH, "WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx"),
   sheet = "Projections",
   col_names = FALSE
 )
@@ -101,7 +101,7 @@ if (file.exists(mnch_excel_file)) {
 
 # 4. Load UNICEF on-track countries data --------------------------------------
 message("Loading UNICEF on-track countries data...")
-unicef_on_track_countries <- read_excel(file.path(RAW_DATA_PATH, "On-track and off-track countries.xlsx")) %>%
+unicef_on_track_countries <- read_excel(file.path(DATA_PATH, "On-track and off-track countries.xlsx")) %>%
   select(
     country_code = `ISO3Code`,
     status_u5mr = `Status.U5MR`

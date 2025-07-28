@@ -12,7 +12,7 @@ SCRIPTS_PATH <- "scripts/"
 DATA_PATH <- "data/"
 DOCS_PATH <- "docs/"
 OUTPUT_PATH <- "output/"
-RAW_DATA_PATH <- "01_rawdata/"
+DATA_PATH <- "data/"
 
 # Create output directory if it doesn't exist
 if (!dir.exists(OUTPUT_PATH)) {

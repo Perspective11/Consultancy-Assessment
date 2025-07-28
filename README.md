@@ -1,10 +1,3 @@
-# -----------------------------------------------------------------------------
-# Title:   UNICEF Data and Analytics Technical Evaluation
-# Purpose: Provide comprehensive documentation for the UNICEF data analysis
-#          project including setup instructions, file structure, and usage
-#          guidelines for maternal health coverage analysis
-# -----------------------------------------------------------------------------
-
 # UNICEF Data and Analytics Technical Evaluation
 
 This repository contains the tasks for the **UNICEF Data and Analytics technical evaluation** for education.
@@ -13,10 +6,10 @@ This repository contains the tasks for the **UNICEF Data and Analytics technical
 
 ```
 Consultancy-Assessment/
-├── 01_rawdata/                    # Raw input files
+├── data/                          # Raw input files and cached data
 │   ├── WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx
-│   └── On-track and off-track countries.xlsx
-├── data/                          # Cached and processed data
+│   ├── On-track and off-track countries.xlsx
+│   └── unicef_mnch_data.xlsx     # Cached UNICEF data
 ├── output/                        # Exported datasets
 │   ├── countries_summary.xlsx     # Comprehensive country-level summary
 │   ├── indicator_summary.xlsx     # Summary statistics by indicator
@@ -41,18 +34,13 @@ Consultancy-Assessment/
 
 ## Folder and File Purposes
 
-### 📁 01_rawdata/
-**Purpose:** Contains the original input files required for the analysis.
+### 📁 data/
+**Purpose:** Contains the original input files required for the analysis and cached data.
 
 **Files:**
 - `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` - UN Population Division demographic data with country populations and births
 - `On-track and off-track countries.xlsx` - UNICEF classification of countries by U5MR achievement status
-
-### 📁 data/
-**Purpose:** Stores cached data and project assets.
-
-**Files:**
-- Cached data files generated during analysis
+- `unicef_mnch_data.xlsx` - Cached UNICEF data from API calls
 
 ### 📁 output/
 **Purpose:** Contains all processed and exported datasets from the analysis pipeline.
@@ -108,7 +96,7 @@ cd Consultancy-Assessment
 ```
 
 #### 2. Verify Required Input Files
-Ensure these files are present in the `01_rawdata/` folder:
+Ensure these files are present in the `data/` folder:
 - `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx`
 - `On-track and off-track countries.xlsx`
 
@@ -162,7 +150,7 @@ After successful execution, you should see:
 #### Common Issues:
 
 1. **Missing input files:**
-   - Ensure both Excel files are in `01_rawdata/` folder
+   - Ensure both Excel files are in `data/` folder
    - Check file names match exactly
 
 2. **Package installation errors:**

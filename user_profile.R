@@ -8,14 +8,13 @@
 # 1. Project paths setup ------------------------------------------------------
 PROJECT_ROOT <- getwd()
 
-RAW_DATA_PATH <- file.path(PROJECT_ROOT, "01_rawdata")
 DATA_PATH     <- file.path(PROJECT_ROOT, "data")
 OUTPUT_PATH   <- file.path(PROJECT_ROOT, "output")
 SCRIPTS_PATH  <- file.path(PROJECT_ROOT, "scripts")
 REPORT_PATH   <- file.path(PROJECT_ROOT, "reports")
 
 # 2. Create directories if they don't exist ---------------------------------
-dirs_to_create <- c(RAW_DATA_PATH, DATA_PATH, OUTPUT_PATH, SCRIPTS_PATH, REPORT_PATH)
+dirs_to_create <- c(DATA_PATH, OUTPUT_PATH, SCRIPTS_PATH, REPORT_PATH)
 for (dir in dirs_to_create) {
   if (!dir.exists(dir)) {
     dir.create(dir, recursive = TRUE)
@@ -76,8 +75,8 @@ category_colors  <- c("#1CABE2", "#80BD41", "#F26A21")
 # Function to check if required raw files exist
 check_required_files <- function() {
   required_files <- c(
-    file.path(RAW_DATA_PATH, "WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx"),
-    file.path(RAW_DATA_PATH, "On-track and off-track countries.xlsx")
+    file.path(DATA_PATH, "WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx"),
+    file.path(DATA_PATH, "On-track and off-track countries.xlsx")
   )
   missing_files <- required_files[!file.exists(required_files)]
   if (length(missing_files) > 0) {
@@ -92,7 +91,7 @@ check_required_files <- function() {
 get_project_status <- function() {
   cat("\n=== UNICEF Data and Analytics Project Status ===\n")
   cat("Project root:      ", PROJECT_ROOT, "\n")
-  cat("Raw data path:     ", RAW_DATA_PATH, "\n")
+  cat("Data path:         ", DATA_PATH, "\n")
   cat("Data cache path:   ", DATA_PATH, "\n")
   cat("Output path:       ", OUTPUT_PATH, "\n")
   cat("Scripts path:      ", SCRIPTS_PATH, "\n")
