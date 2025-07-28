@@ -26,32 +26,24 @@ library(tidyverse)
 # Clear environment (optional - uncomment if you want a clean start)
 # rm(list = ls())
 
-cat("=== UNICEF Data Analysis Project ===\n")
+cat("UNICEF Data Analysis Project\n")
 cat("Starting data loading and transformation process...\n\n")
 
 # Step 1: Load user profile and setup environment
 cat("Step 1: Loading user profile and setting up environment...\n")
 source("user_profile.R")
 
-cat("\n", strrep("=", 50), "\n")
-
 # Step 2: Load all data sources
 cat("Step 2: Loading data sources...\n")
 source(file.path(SCRIPTS_PATH, "load.R"))
-
-cat("\n", strrep("=", 50), "\n")
 
 # Step 3: Transform and analyze data
 cat("Step 3: Transforming and analyzing data...\n")
 source(file.path(SCRIPTS_PATH, "transform.R"))
 
-cat("\n", strrep("=", 50), "\n")
-
 # Step 4: Create report
 cat("Step 4: Creating report...\n")
 source(file.path(SCRIPTS_PATH, "create_report.R"))
-
-cat("\n", strrep("=", 50), "\n")
 
 # Step 5: Project completion summary
 cat("Step 5: Project completion summary...\n")
