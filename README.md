@@ -215,3 +215,13 @@ The final report provides a concise 3-page analysis with professional visualizat
 - Subsequent runs: ~30 seconds (uses cached data)
 - Report generation: ~1 minute
 
+---
+
+## Job Application Information
+
+**Primary Position Applied For:**
+- Household Survey Data Analyst Consultant – Req. #581656
+
+**Additional Position of Interest:**
+- Administrative Data Analyst – Req. #581696
+
