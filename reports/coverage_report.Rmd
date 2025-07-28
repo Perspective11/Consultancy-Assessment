@@ -1,0 +1,209 @@
+---
+title:  "Maternal Health Coverage Analysis: ANC4 and Skilled Birth Attendance"
+subtitle: "Population-Weighted Analysis by Under-5 Mortality Rate Status"
+date:   "`r Sys.Date()`"
+fontsize: 11pt
+geometry: margin=1.5cm
+mainfont: Arial
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{fontspec}
+  - \setmainfont{Arial}
+---
+
+```{r setup-header, include=FALSE}
+# -----------------------------------------------------------------------------
+# Title:   Maternal Health Coverage Analysis Report
+# Purpose: Generate a 3-page PDF report analyzing maternal health coverage 
+#          indicators (ANC4 and SBA) by U5MR status with population-weighted
+#          analysis and professional visualizations
+# -----------------------------------------------------------------------------
+```
+
+```{r project-root, include=FALSE}
+# Set absolute path to project root for consistent file references
+PROJECT_ROOT <- normalizePath(getwd(), winslash = "/")
+```
+
+```{r setup, include=FALSE}
+# Configure knitr options for consistent output
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 9,
+  fig.height = 8,
+  dev = "cairo_pdf"
+)
+
+knitr::opts_knit$set(root.dir = REPORT_PATH)
+
+# Source required scripts for data processing and analysis
+source("user_profile.R")
+source("scripts/load.R")
+source("scripts/transform.R")
+```
+
+```{r logo, echo=FALSE, fig.align='center', out.width='25%'}
+# Display UNICEF logo for professional presentation
+knitr::include_graphics("unicef_logo.png")
+```
+
+# Objective
+
+This analysis examines the relationship between maternal health coverage indicators and under-5 mortality rate (U5MR) performance across countries. The analysis compares population-weighted coverage of At least 4 Antenatal Care visits (ANC4) and Skilled Birth Attendance (SBA) between countries classified as "on-track" versus "off-track" for U5MR targets.
+
+---
+
+# Visual Analysis
+
+```{r coverage-plot, echo=FALSE, fig.cap="Maternal Health Coverage by U5MR Status", fig.pos='H'}
+# Create comprehensive boxplot visualization with population-weighted analysis
+# Prepare data for visualization
+countries_long <- countries_summary %>% 
+  select(country_code, country_name, status_u5mr, births,
+         `At least 4 ANC visits` = last_anc4_value,
+         `Skilled birth attendance` = last_sab_value) %>% 
+  pivot_longer(cols      = c(`At least 4 ANC visits`, `Skilled birth attendance`),
+               names_to  = "indicator",
+               values_to = "coverage") %>% 
+  filter(!is.na(coverage))
+
+# Set explicit factor levels for consistent ordering
+status_levels <- c("on-track", "off-track")
+countries_long$status_u5mr <- factor(countries_long$status_u5mr, levels = status_levels)
+
+# Calculate population-weighted means for reference lines
+pw_means <- countries_long %>% 
+  group_by(status_u5mr, indicator) %>% 
+  summarise(pw_coverage = weighted.mean(coverage, w = births, na.rm = TRUE),
+            .groups = "drop") %>% 
+  mutate(status_u5mr = factor(status_u5mr, levels = status_levels))
+
+# Calculate medians for additional reference lines
+median_df <- countries_long %>% 
+  group_by(status_u5mr, indicator) %>% 
+  summarise(median_cov = median(coverage, na.rm = TRUE), .groups = "drop") %>% 
+  mutate(legend_label = ifelse(status_u5mr == "on-track",
+                               "On-track median",
+                               "Off-track median"))
+
+# Define visualization parameters
+category_colors <- c("#1CABE2", "#F26A21", "#80BD41")
+box_width  <- .35
+jitter_w   <- .15
+border_sz  <- .35
+
+# Build comprehensive visualization
+p <- ggplot(countries_long,
+            aes(x = status_u5mr, y = coverage, fill = status_u5mr)) +
+  
+  # Semi-transparent box interiors
+  geom_boxplot(width  = box_width,
+               outlier.shape = NA,
+               alpha  = .35,
+               colour = NA) +      
+  
+  # Opaque borders with consistent styling
+  geom_boxplot(width  = box_width,
+               outlier.shape = NA,
+               aes(colour = status_u5mr),
+               fill   = NA,
+               size   = border_sz) +
+  
+  # Individual country data points
+  geom_jitter(aes(colour = status_u5mr),
+              width  = jitter_w,
+              height = 0,
+              size   = 1.5,
+              alpha  = .7,
+              show.legend = FALSE) +
+  
+  # Population-weighted average reference lines
+  geom_segment(data = pw_means,
+               aes(x     = as.numeric(status_u5mr) - box_width/2,
+                   xend  = as.numeric(status_u5mr) + box_width/2,
+                   y     = pw_coverage,
+                   yend  = pw_coverage,
+                   colour = "Weighted average"),
+               inherit.aes = FALSE,
+               linewidth = .6) +
+  
+  # Labels for weighted averages
+  geom_text(data = pw_means,
+            aes(x = status_u5mr, y = pw_coverage,
+                label = paste0(round(pw_coverage, 1), "%")),
+            colour = "black",
+            size = 3,
+            hjust = -1.2,
+            fontface = "italic",
+            inherit.aes = FALSE) +
+
+  # Median reference lines
+  geom_segment(data = median_df,
+               aes(x     = as.numeric(status_u5mr) - box_width/2,
+                   xend  = as.numeric(status_u5mr) + box_width/2,
+                   y     = median_cov,
+                   yend  = median_cov,
+                   colour = legend_label),
+               inherit.aes = FALSE,
+               linewidth = .6) +
+  
+  # Configure scales and styling
+  scale_fill_manual(values = category_colors, guide = "none") +
+  scale_colour_manual(
+    name   = "",
+    values = c("on-track" = category_colors[1],
+               "off-track" = category_colors[2],
+               "Weighted average" = "black",
+               "On-track median"  = category_colors[1],
+               "Off-track median" = category_colors[2])
+  ) +
+  guides(linetype = "none") +
+  scale_x_discrete(labels = c("on-track" = "On-track", "off-track" = "Off-track")) +
+  scale_y_continuous(labels = percent_format(scale = 1),
+                     limits = c(0, 100),
+                     expand = expansion(mult = c(.02, .05))) +
+  facet_wrap(~ indicator, nrow = 1) +
+  
+  # Apply professional styling
+  labs(
+    x     = NULL,
+    y     = "Coverage (%)",
+    title = "Maternal Health Coverage: ANC4 Visits & Skilled Birth Attendance (2018-2022)",
+    subtitle = "Population-weighted coverage by under-5 mortality status: on-track vs off-track",
+    caption = "Each dot = one country\nBox = distribution\nBlack line = population-weighted average"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.spacing.x    = unit(1, "cm"),
+    panel.border       = element_rect(colour = "grey70",
+                                      fill = NA, linewidth = .4),
+    legend.position    = "bottom",
+    legend.box         = "horizontal",
+    legend.text        = element_text(size = 10),
+    legend.spacing.x   = unit(0.5, "cm"),
+    plot.title         = element_text(size = 12, face = "bold"),
+    plot.subtitle      = element_text(size = 10, color = "grey50"),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0),
+    strip.text         = element_text(face = "bold"),
+    axis.text.x        = element_text(size = 11)
+  )
+
+print(p)
+```
+
+---
+
+# Results and Interpretation
+
+The analysis reveals significant disparities in maternal health coverage between countries classified as "on-track" versus "off-track" for U5MR targets. On-track countries demonstrate substantially higher coverage of both ANC4 and SBA indicators compared to off-track countries, showing a clear positive correlation between maternal health service utilization and child survival outcomes. This suggests that comprehensive maternal health interventions, including antenatal care and skilled birth attendance, are essential for achieving positive child survival goals. The population-weighted analysis ensures that countries with larger populations have proportionally greater influence on the results, providing a more accurate representation of the global burden and impact of maternal health coverage gaps.
+
+---
+
+*This report was generated on `r Sys.Date()` using data from the UNICEF MNCH database and UN Population Division estimates.*

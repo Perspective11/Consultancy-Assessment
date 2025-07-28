@@ -1,22 +1,15 @@
+# -----------------------------------------------------------------------------
+# Title:   UNICEF Data and Analytics Technical Evaluation
+# Purpose: Provide comprehensive documentation for the UNICEF data analysis
+#          project including setup instructions, file structure, and usage
+#          guidelines for maternal health coverage analysis
+# -----------------------------------------------------------------------------
+
 # UNICEF Data and Analytics Technical Evaluation
 
 This repository contains the tasks for the **UNICEF Data and Analytics technical evaluation** for education.
 
-## Project Overview
-
-This project processes and analyzes UNICEF Maternal, Newborn, and Child Health (MNCH) data along with UN Population Division data.
-
-## Data Sources
-
-### Primary Data Sources
-- **UNICEF SDMX API**: Maternal and Child Health indicators (MNCH_ANC4, MNCH_SAB)
-- **UN Population Division**: Demographic indicators and country reference data
-- **UNICEF On-track Countries**: Country status and classification data
-
-### Caching Mechanism
-The indicator data is fetched from the UNICEF SDMX API on the first run and cached locally in Excel format. Subsequent runs load data from the cache for improved performance and reduced API calls.
-
-## Project Structure
+## Repository Structure
 
 ```
 Consultancy-Assessment/
@@ -25,151 +18,200 @@ Consultancy-Assessment/
 │   └── On-track and off-track countries.xlsx
 ├── data/                          # Cached and processed data
 ├── output/                        # Exported datasets
-├── scripts/
+│   ├── countries_summary.xlsx     # Comprehensive country-level summary
+│   ├── indicator_summary.xlsx     # Summary statistics by indicator
+│   ├── pop_weighted.xlsx         # Population-weighted analysis
+│   ├── un_population.xlsx        # Processed UN Population data
+│   ├── unicef_mnch_data.xlsx     # Processed MNCH data
+│   ├── unicef_mnch_data_wide.xlsx # Wide format MNCH data
+│   └── unicef_on_track_countries.xlsx # Processed on-track countries
+├── reports/                       # Generated reports
+│   ├── coverage_report.Rmd        # Streamlined 3-page report
+│   ├── coverage_report.pdf        # Final PDF report
+│   └── unicef_logo.png           # UNICEF logo for report generation
+├── scripts/                       # R scripts for data processing
 │   ├── load.R                     # Data loading and caching
-│   └── transform.R                # Data transformation
+│   ├── transform.R                # Data transformation
+│   └── create_report.R            # Report generation
 ├── user_profile.R                 # Project setup and configuration
 ├── run_project.R                  # Main execution script
-└── README.md                      # This file
+├── Consultancy-Assessment.Rproj   # RStudio project file
+└── README.md                      # This documentation file
 ```
 
-## Data Processing Pipeline
+## Folder and File Purposes
 
-### 1. Project Setup (`user_profile.R`)
-- Sets up project paths and directories
-- Installs and loads required R packages
-- Validates required input files
-- Provides project status and utility functions
+### 📁 01_rawdata/
+**Purpose:** Contains the original input files required for the analysis.
 
-### 2. Data Loading (`scripts/load.R`)
-- Loads UN Population Division data from "Projections" sheet
-- Fetches MNCH data from UNICEF SDMX API (first run) or loads from cache
-- Processes UNICEF on-track countries data
-- Standardizes country codes and names based on UN Population dataset
-- Exports cleaned datasets to output directory
+**Files:**
+- `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` - UN Population Division demographic data with country populations and births
+- `On-track and off-track countries.xlsx` - UNICEF classification of countries by U5MR achievement status
 
-### 3. Data Transformation (`scripts/transform.R`)
-- Creates wide format datasets for analysis convenience
-- Builds comprehensive country summary with population and indicator data
-- Computes latest indicator values per country
-- Calculates population-weighted coverage by U5MR status
-- Exports transformed datasets
+### 📁 data/
+**Purpose:** Stores cached data and project assets.
 
-## Dataset Structures
+**Files:**
+- Cached data files generated during analysis
 
-### countries_summary
-A comprehensive country-level dataset combining multiple sources:
+### 📁 output/
+**Purpose:** Contains all processed and exported datasets from the analysis pipeline.
 
-| Column | Description | Source |
-|--------|-------------|---------|
-| `country_code` | 3-letter ISO country code | Standardized across all sources |
-| `country_name` | Country name | UN Population Division |
-| `status_u5mr` | U5MR status classification | UNICEF On-track Countries |
-| `total_population` | Total population (thousands) | UN Population Division |
-| `births` | Annual births (thousands) | UN Population Division |
-| `last_anc4_year` | Most recent year with ANC4 data | UNICEF MNCH Data |
-| `last_anc4_value` | Latest ANC4 coverage value | UNICEF MNCH Data |
-| `last_sab_year` | Most recent year with SAB data | UNICEF MNCH Data |
-| `last_sab_value` | Latest SAB coverage value | UNICEF MNCH Data |
-
-### pop_weighted
-Population-weighted analysis by U5MR status:
-
-| Column | Description |
-|--------|-------------|
-| `status_u5mr` | U5MR status classification (On-track/Off-track) |
-| `pw_anc4` | Population-weighted ANC4 coverage |
-| `pw_sab` | Population-weighted SBA coverage |
-| `total_births` | Total births in the status group |
-| `n_total` | Number of countries in the status group |
-| `n_missing_anc4` | Number of countries missing ANC4 data |
-| `n_missing_sab` | Number of countries missing SBA data |
-
-### unicef_mnch_data (Tidy Format)
-Long format dataset with one observation per row:
-
-| Column | Description |
-|--------|-------------|
-| `country_code` | 3-letter ISO country code |
-| `country_name` | Country name (from UN Population) |
-| `indicator` | Indicator code (MNCH_ANC4, MNCH_SAB) |
-| `sex` | Sex classification |
-| `year` | Year of observation |
-| `value` | Indicator value |
-
-### unicef_mnch_data_wide (Wide Format)
-Wide format dataset with indicators as columns:
-
-| Column | Description |
-|--------|-------------|
-| `country_code` | 3-letter ISO country code |
-| `country_name` | Country name |
-| `year` | Year of observation |
-| `MNCH_ANC4` | ANC4 coverage value |
-| `MNCH_SAB` | SAB coverage value |
-
-## Data Standardization
-
-The country codes and names are standardized based on the UN Population Division dataset to ensure consistency across all data sources. This standardization:
-- Uses 3-letter ISO country codes as the primary identifier
-- Applies UN Population Division country names throughout
-- Filters out non-country geographic areas (regions, subregions)
-- Ensures data quality through consistent naming conventions
-
-## Usage
-
-### Quick Start
-1. Ensure all required raw data files are in the `01_rawdata/` directory
-2. Run the main project script:
-   ```r
-   source("run_project.R")
-   ```
-
-### Manual Execution
-1. Load project setup:
-   ```r
-   source("user_profile.R")
-   ```
-2. Load and process data:
-   ```r
-   source("scripts/load.R")
-   ```
-3. Transform and analyze data:
-   ```r
-   source("scripts/transform.R")
-   ```
-
-## Output Files
-
-The project generates the following output files in the `output/` directory:
-
-### Raw Data Exports
-- `un_population.xlsx` - Processed UN Population Division data
-- `unicef_on_track_countries.xlsx` - Processed on-track countries data (country_code, status_u5mr)
-- `unicef_mnch_data.xlsx` - Processed MNCH data from SDMX
-
-### Transformed Data
-- `unicef_mnch_data_wide.xlsx` - Wide format MNCH data
-- `countries_summary.xlsx` - Comprehensive country-level summary
-- `indicator_summary.xlsx` - Summary statistics by indicator
+**Files:**
+- `countries_summary.xlsx` - Main analysis dataset combining all sources
+- `indicator_summary.xlsx` - Summary statistics by maternal health indicator
 - `pop_weighted.xlsx` - Population-weighted analysis by U5MR status
+- `un_population.xlsx` - Processed UN Population Division data
+- `unicef_mnch_data.xlsx` - Processed maternal health data from UNICEF API
+- `unicef_mnch_data_wide.xlsx` - Wide format of maternal health data
+- `unicef_on_track_countries.xlsx` - Processed on-track countries classification
 
-## Dependencies
+### 📁 reports/
+**Purpose:** Contains the final report and its source files.
+
+**Files:**
+- `coverage_report.Rmd` - R Markdown source for the analysis report
+- `coverage_report.pdf` - Final 3-page PDF report with visualizations
+- `unicef_logo.png` - UNICEF logo for report generation
+
+### 📁 scripts/
+**Purpose:** Contains the R scripts that perform the data processing pipeline.
+
+**Files:**
+- `load.R` - Loads and processes raw data from multiple sources
+- `transform.R` - Transforms data into analysis-ready formats
+- `create_report.R` - Generates the final PDF report
+
+### 📄 Root Files
+**Purpose:** Project configuration and execution files.
+
+**Files:**
+- `user_profile.R` - Project setup, package management, and configuration
+- `run_project.R` - Main script that executes the entire analysis pipeline
+- `Consultancy-Assessment.Rproj` - RStudio project configuration
+- `README.md` - This documentation file
+
+## How to Reproduce the Analysis
+
+### Prerequisites
+
+1. **Install R** (version 4.0 or higher)
+2. **Install RStudio** (recommended for easier workflow)
+3. **Install required R packages** (will be installed automatically by the project)
+
+### Step-by-Step Instructions
+
+#### 1. Clone or Download the Repository
+```bash
+git clone [repository-url]
+cd Consultancy-Assessment
+```
+
+#### 2. Verify Required Input Files
+Ensure these files are present in the `01_rawdata/` folder:
+- `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx`
+- `On-track and off-track countries.xlsx`
+
+#### 3. Open the Project
+- **Option A (RStudio):** Open `Consultancy-Assessment.Rproj` in RStudio
+- **Option B (R console):** Set working directory to the project folder
+
+#### 4. Run the Complete Analysis
+Execute the main project script:
+```r
+source("run_project.R")
+```
+
+This single command will:
+- Set up the project environment
+- Install required packages
+- Load and process all data
+- Generate the final report
+
+#### 5. Alternative: Step-by-Step Execution
+If you prefer to run each step individually:
+
+```r
+# Step 1: Project setup
+source("user_profile.R")
+
+# Step 2: Load and process data
+source("scripts/load.R")
+
+# Step 3: Transform and analyze data
+source("scripts/transform.R")
+
+# Step 4: Generate the report
+source("scripts/create_report.R")
+```
+
+### Expected Output
+
+After successful execution, you should see:
+
+1. **Data files** in the `output/` folder:
+   - `countries_summary.xlsx` - Main analysis dataset
+   - `pop_weighted.xlsx` - Population-weighted results
+   - Other processed datasets
+
+2. **Report** in the `reports/` folder:
+   - `coverage_report.pdf` - 3-page analysis report with visualizations
+
+### Troubleshooting
+
+#### Common Issues:
+
+1. **Missing input files:**
+   - Ensure both Excel files are in `01_rawdata/` folder
+   - Check file names match exactly
+
+2. **Package installation errors:**
+   - The project will automatically install required packages
+   - If manual installation needed: `install.packages(c("tidyverse", "rmarkdown", "tinytex"))`
+
+3. **PDF generation issues:**
+   - Ensure `tinytex` is installed: `tinytex::install_tinytex()`
+   - Check that LaTeX is available on your system
+
+4. **API connection issues:**
+   - The project caches UNICEF data on first run
+   - Subsequent runs use cached data for reliability
+
+### Data Sources
+
+The analysis uses three main data sources:
+
+1. **UNICEF SDMX API** - Maternal health indicators (ANC4, SBA)
+2. **UN Population Division** - Demographic data and country reference
+3. **UNICEF On-track Countries** - U5MR achievement classification
+
+### Analysis Overview
+
+The project analyzes maternal health coverage indicators in relation to under-5 mortality rate (U5MR) performance:
+
+- **ANC4**: Percentage of women with at least 4 antenatal care visits
+- **SBA**: Percentage of deliveries attended by skilled health personnel
+- **Population-weighted analysis** comparing on-track vs off-track countries
+
+The final report provides a concise 3-page analysis with professional visualizations and key findings.
+
+## Technical Details
 
 ### Required R Packages
-- `tidyverse`: Data manipulation and analysis
-- `rsdmx`: SDMX data import
-- `readxl`/`writexl`: Excel file handling
-- `httr`/`jsonlite`: API communication
-- `glue`: String interpolation
-- `stringr`: String manipulation
+- `tidyverse` - Data manipulation and analysis
+- `rsdmx` - SDMX data import
+- `readxl`/`writexl` - Excel file handling
+- `httr`/`jsonlite` - API communication
+- `rmarkdown` - Report generation
+- `tinytex` - PDF compilation support
 
-### Required Input Files
-- `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` (UN Population Division)
-- `On-track and off-track countries.xlsx` (UNICEF)
+### System Requirements
+- R 4.0 or higher
+- Internet connection (for first-time data download)
+- LaTeX installation (for PDF generation)
 
-## Configuration
-
-The project uses centralized configuration in `user_profile.R`:
-- File paths and caching settings
+### Performance Notes
+- First run: ~2-3 minutes (includes data download and caching)
+- Subsequent runs: ~30 seconds (uses cached data)
+- Report generation: ~1 minute
 

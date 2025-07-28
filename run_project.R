@@ -1,13 +1,13 @@
 # -----------------------------------------------------------------------------
-# Title:   Main Project Runner - UNICEF Data Analysis
-# Author:  Your Name
-# Date:    2025‑07‑27
+# Title:   Main Project Runner
+# Purpose: Execute the complete UNICEF data analysis pipeline including data
+#          loading, transformation, analysis, and report generation
 # -----------------------------------------------------------------------------
 
-# Set working directory to project root
+# Set working directory to project root for consistent execution
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-# Define project paths
+# Define project paths for organized file structure
 SCRIPTS_PATH <- "scripts/"
 DATA_PATH <- "data/"
 DOCS_PATH <- "docs/"
@@ -47,8 +47,14 @@ source(file.path(SCRIPTS_PATH, "transform.R"))
 
 cat("\n", strrep("=", 50), "\n")
 
-# Step 4: Project completion summary
-cat("Step 4: Project completion summary...\n")
+# Step 4: Create report
+cat("Step 4: Creating report...\n")
+source(file.path(SCRIPTS_PATH, "create_report.R"))
+
+cat("\n", strrep("=", 50), "\n")
+
+# Step 5: Project completion summary
+cat("Step 5: Project completion summary...\n")
 cat("✓ Data loading completed\n")
 cat("✓ Data transformation completed\n")
 cat("✓ Analysis completed\n\n")

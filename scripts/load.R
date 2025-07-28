@@ -1,13 +1,14 @@
 # -----------------------------------------------------------------------------
-# Title:   Data Loading Script - UNICEF SDMX and Excel Files
-# Author:  Your Name
-# Date:    2025‑07‑27
+# Title:   Data Loading Script
+# Purpose: Load and process data from multiple sources including UNICEF SDMX API,
+#          UN Population Division Excel files, and UNICEF on-track countries
+#          classification data with caching for reliability
 # -----------------------------------------------------------------------------
 
 # Note: Libraries and paths are loaded from user_profile.R
 
 # 1. Project configuration ----------------------------------------------------
-# UNICEF SDMX API configuration
+# UNICEF SDMX API configuration for maternal health indicators
 UNICEF_API_CONFIG <- list(
   agency_id  = "UNICEF",
   flow_id    = "GLOBAL_DATAFLOW",
@@ -15,7 +16,7 @@ UNICEF_API_CONFIG <- list(
   base_url   = "https://sdmx.data.unicef.org/ws/public/sdmxapi/rest"
 )
 
-# Data parameters
+# Data parameters for maternal health indicators
 DATA_CONFIG <- list(
   indicators = c("MNCH_ANC4", "MNCH_SAB"),
   year_range = 2018:2022
@@ -29,7 +30,7 @@ un_population <- read_excel(
   col_names = FALSE
 )
 
-# Find "Index" row and use as column headers
+# Find "Index" row and use as column headers for proper data structure
 index_row <- which(apply(un_population, 1, function(x) any(x == "Index", na.rm = TRUE)))
 if (length(index_row) > 0) {
   header_row <- index_row[1]
@@ -55,7 +56,7 @@ un_population <- un_population %>%
   )
 
 # 3. Load or fetch UNICEF MNCH data -------------------------------------------
-# Build SDMX‑ML data URL using configuration from load.R
+# Build SDMX‑ML data URL using configuration parameters
 dq       <- str_c(".", str_c(DATA_CONFIG$indicators, collapse = "+"), ".")
 data_url <- glue(
   "{UNICEF_API_CONFIG$base_url}/data/{UNICEF_API_CONFIG$agency_id},{UNICEF_API_CONFIG$flow_id},{UNICEF_API_CONFIG$version}/{dq}",
@@ -64,7 +65,7 @@ data_url <- glue(
   "&format=sdmx-2.1"
 )
 
-# Cache file path
+# Cache file path for UNICEF data
 mnch_excel_file <- file.path(DATA_PATH, "unicef_mnch_data.xlsx")
 
 if (file.exists(mnch_excel_file)) {
@@ -74,6 +75,7 @@ if (file.exists(mnch_excel_file)) {
   message("Fetching MNCH data from UNICEF SDMX API...")
   sdmx_obj <- readSDMX(data_url)
   
+  # Process and clean UNICEF data
   unicef_mnch_data <- as_tibble(as.data.frame(sdmx_obj, stringsAsFactors = FALSE)) %>%
     # Filter for country codes that exist in un_population
     filter(REF_AREA %in% un_population$country_code) %>%
@@ -104,17 +106,18 @@ unicef_on_track_countries <- read_excel(file.path(RAW_DATA_PATH, "On-track and o
     country_code = `ISO3Code`,
     status_u5mr = `Status.U5MR`
   ) %>%
-  # Convert status_u5mr to on-track or off-track
+  # Convert status_u5mr to standardized on-track or off-track categories
   mutate(status_u5mr = case_when(
     str_to_lower(status_u5mr) %in% c("achieved", "on-track", "on track") ~ "on-track",
     str_to_lower(status_u5mr) %in% c("acceleration needed", "off-track") ~ "off-track",
     TRUE ~ NA_character_
   )) %>%
-  # Replace Kosovo with the updated ISO3 code XKX
+  # Replace Kosovo with the updated ISO3 code XKX for consistency
   mutate(country_code = case_when(
     country_code == "RKS" ~ "XKX",
     TRUE ~ country_code
   ))
+
 # 5. Export cleaned datasets ---------------------------------------------------
 message("Exporting cleaned datasets...")
 write_xlsx(un_population, file.path(OUTPUT_PATH, "un_population.xlsx"))
