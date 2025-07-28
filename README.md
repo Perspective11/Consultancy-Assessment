@@ -91,7 +91,7 @@ Consultancy-Assessment/
 
 #### 1. Clone or Download the Repository
 ```bash
-git clone [repository-url]
+git clone https://github.com/Perspective11/Consultancy-Assessment.git
 cd Consultancy-Assessment
 ```
 
