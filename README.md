@@ -183,6 +183,24 @@ The project analyzes maternal health coverage indicators in relation to under-5 
 
 The final report provides a concise 3-page analysis with professional visualizations and key findings.
 
+## Key Results
+
+The analysis reveals important patterns in maternal health coverage between countries that are on-track vs off-track for U5MR targets:
+
+| Metric | u5mr off-track | u5mr on-track | Total |
+|--------|----------------|---------------|-------|
+| Total Countries | 59 | 141 | 200 |
+| Total Births | 54,812 | 78,845 | 133,656 |
+| Population-Weighted ANC4 (%) | 55 | 73 | 66 |
+| Population-Weighted SAB (%) | 69 | 93 | 83 |
+| Countries with ANC4 Data | 42 | 45 | 87 |
+| Countries Missing ANC4 Data | 17 | 96 | 113 |
+| Countries with SAB Data | 44 | 105 | 149 |
+| Countries Missing SAB Data | 15 | 36 | 51 |
+
+
+**Note:** Bermuda (BMU) has been excluded from the analysis as it lacks U5MR classification data in the source files.
+
 ## Technical Details
 
 ### Required R Packages
