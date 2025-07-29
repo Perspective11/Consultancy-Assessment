@@ -48,7 +48,7 @@ Consultancy-Assessment/
 **Files:**
 - `countries_summary.xlsx` - Main analysis dataset combining all sources
 - `indicator_summary.xlsx` - Summary statistics by maternal health indicator
-- `pop_weighted.xlsx` - Population-weighted analysis by U5MR status
+- `countries_indicators_u5mr_summary.xlsx` - Population-weighted analysis by U5MR status
 - `un_population.xlsx` - Processed UN Population Division data
 - `unicef_mnch_data.xlsx` - Processed maternal health data from UNICEF API
 - `unicef_mnch_data_wide.xlsx` - Wide format of maternal health data
@@ -139,7 +139,7 @@ After successful execution, you should see:
 
 1. **Data files** in the `output/` folder:
    - `countries_summary.xlsx` - Main analysis dataset
-   - `pop_weighted.xlsx` - Population-weighted results
+   - `countries_indicators_u5mr_summary.xlsx` - Population-weighted results
    - Other processed datasets
 
 2. **Report** in the `reports/` folder:

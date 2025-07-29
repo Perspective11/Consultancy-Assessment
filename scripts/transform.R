@@ -167,7 +167,7 @@ print(unicef_mnch_data_wide, n = 10)
 cat("\nCountries Summary Preview (first 10 rows)\n")
 print(countries_summary, n = 10)
 
-cat("\nCountries Indicators U5MR Summary\n")
+cat("\n=== Countries Indicators U5MR Summary ===\n")
 print(countries_indicators_u5mr_summary)
 
-cat("\nTransformation Complete\n")
+cat("\n=== Transformation Complete ===\n")
