@@ -135,10 +135,10 @@ p <- ggplot(countries_long,
   # Labels for weighted averages
   geom_text(data = pw_means,
             aes(x = status_u5mr, y = pw_coverage,
-                label = paste0(round(pw_coverage, 1), "%")),
+                label = paste0(round(pw_coverage, 0), "%")),
             colour = "black",
             size = 3,
-            hjust = -1.2,
+            hjust = -1.5,
             fontface = "italic",
             inherit.aes = FALSE) +
 
