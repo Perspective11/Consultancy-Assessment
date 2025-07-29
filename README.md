@@ -12,8 +12,7 @@ Consultancy-Assessment/
 │   └── unicef_mnch_data.xlsx     # Cached UNICEF data
 ├── output/                        # Exported datasets
 │   ├── countries_summary.xlsx     # Comprehensive country-level summary
-│   ├── indicator_summary.xlsx     # Summary statistics by indicator
-│   ├── pop_weighted.xlsx         # Population-weighted analysis
+│   ├── countries_indicators_u5mr_summary.xlsx # Population-weighted analysis by U5MR status
 │   ├── un_population.xlsx        # Processed UN Population data
 │   ├── unicef_mnch_data.xlsx     # Processed MNCH data
 │   ├── unicef_mnch_data_wide.xlsx # Wide format MNCH data
@@ -47,7 +46,6 @@ Consultancy-Assessment/
 
 **Files:**
 - `countries_summary.xlsx` - Main analysis dataset combining all sources
-- `indicator_summary.xlsx` - Summary statistics by maternal health indicator
 - `countries_indicators_u5mr_summary.xlsx` - Population-weighted analysis by U5MR status
 - `un_population.xlsx` - Processed UN Population Division data
 - `unicef_mnch_data.xlsx` - Processed maternal health data from UNICEF API
