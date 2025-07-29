@@ -40,7 +40,7 @@ Consultancy-Assessment/
 **Files:**
 - `WPP2022_GEN_F01_DEMOGRAPHIC_INDICATORS_COMPACT_REV1.xlsx` - UN Population Division demographic data with country populations and births
 - `On-track and off-track countries.xlsx` - UNICEF classification of countries by U5MR achievement status
-- `unicef_mnch_data.xlsx` - Cached UNICEF data from API calls
+- `unicef_mnch_data.xlsx` - **Direct UNICEF SDMX API data cached locally** (retrieved via rsdmx package)
 
 ### 📁 output/
 **Purpose:** Contains all processed and exported datasets from the analysis pipeline.
@@ -162,16 +162,19 @@ After successful execution, you should see:
    - Check that LaTeX is available on your system
 
 4. **API connection issues:**
-   - The project caches UNICEF data on first run
-   - Subsequent runs use cached data for reliability
+   - **UNICEF data is retrieved directly from the SDMX API on first run**
+   - Data is automatically cached locally for subsequent runs
+   - If API is unavailable, cached data ensures analysis can proceed
 
 ### Data Sources
 
 The analysis uses three main data sources:
 
-1. **UNICEF SDMX API** - Maternal health indicators (ANC4, SBA)
+1. **UNICEF SDMX API** - **Direct API retrieval** of maternal health indicators (ANC4, SBA) via rsdmx package
 2. **UN Population Division** - Demographic data and country reference
 3. **UNICEF On-track Countries** - U5MR achievement classification
+
+**Note:** UNICEF data is retrieved directly from the official SDMX API and cached locally for reproducibility and reliability.
 
 ### Analysis Overview
 
@@ -217,8 +220,8 @@ The analysis reveals important patterns in maternal health coverage between coun
 - LaTeX installation (for PDF generation)
 
 ### Performance Notes
-- First run: ~2-3 minutes (includes data download and caching)
-- Subsequent runs: ~30 seconds (uses cached data)
+- **First run: ~2-3 minutes** (includes direct UNICEF SDMX API data retrieval and caching)
+- **Subsequent runs: ~30 seconds** (uses locally cached UNICEF data)
 - Report generation: ~1 minute
 
 ---
