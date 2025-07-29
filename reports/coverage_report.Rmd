@@ -3,7 +3,6 @@ title:  "Maternal Health Coverage Analysis: ANC4 and Skilled Birth Attendance"
 subtitle: "Population-Weighted Analysis by Under-5 Mortality Rate Status"
 date:   "`r Sys.Date()`"
 fontsize: 11pt
-geometry: margin=1.5cm
 mainfont: Arial
 output:
   pdf_document:
@@ -13,6 +12,7 @@ header-includes:
   - \floatplacement{figure}{H}
   - \usepackage{fontspec}
   - \setmainfont{Arial}
+  - \linespread{2}
 ---
 
 ```{r setup-header, include=FALSE}
@@ -54,13 +54,13 @@ knitr::include_graphics("unicef_logo.png")
 
 # Objective
 
-This analysis examines the relationship between maternal health coverage indicators and under-5 mortality rate (U5MR) performance across countries. The analysis compares population-weighted coverage of At least 4 Antenatal Care visits (ANC4) and Skilled Birth Attendance (SBA) between countries classified as "on-track" versus "off-track" for U5MR targets.
+This analysis asks whether better maternity care is linked to lower deaths among children under five. It focuses on two measures of care. ANC4 is the share of pregnant women who attended at least four prenatal check-ups. SBA is the share of births assisted by a trained midwife, nurse, or doctor. Countries are placed in two groups: on-track if they are meeting or expected to meet the global target for under-five mortality, and off-track if they are not. For each group the analysis calculates a population-weighted average of ANC4 and SBA, so countries with more births influence the results more than smaller countries. Comparing these weighted averages shows how access to regular prenatal visits and skilled delivery support relates to progress in reducing child deaths.
 
 ---
 
 # Visual Analysis
 
-```{r coverage-plot, echo=FALSE, fig.cap="Maternal Health Coverage by U5MR Status", fig.pos='H'}
+```{r coverage-plot, echo=FALSE, fig.pos='H'}
 # Create comprehensive boxplot visualization with population-weighted analysis
 # Prepare data for visualization
 countries_long <- countries_summary %>% 
@@ -128,9 +128,10 @@ p <- ggplot(countries_long,
                    xend  = as.numeric(status_u5mr) + box_width/2,
                    y     = pw_coverage,
                    yend  = pw_coverage,
-                   colour = "Weighted average"),
+                   colour = "Population-weighted average"),
                inherit.aes = FALSE,
-               linewidth = .6) +
+               linewidth = .6,
+               show.legend = TRUE) +
   
   # Labels for weighted averages
   geom_text(data = pw_means,
@@ -156,9 +157,10 @@ p <- ggplot(countries_long,
   scale_fill_manual(values = category_colors, guide = "none") +
   scale_colour_manual(
     name   = "",
+    breaks = "Population-weighted average",
     values = c("on-track" = category_colors[1],
                "off-track" = category_colors[2],
-               "Weighted average" = "black",
+               "Population-weighted average" = "black",
                "On-track median"  = category_colors[1],
                "Off-track median" = category_colors[2])
   ) +
@@ -171,11 +173,11 @@ p <- ggplot(countries_long,
   
   # Apply professional styling
   labs(
-    x     = NULL,
+    x     = "Under 5 mortality status",
     y     = "Coverage (%)",
     title = "Maternal Health Coverage: ANC4 Visits & Skilled Birth Attendance (2018-2022)",
     subtitle = "Population-weighted coverage by under-5 mortality status: on-track vs off-track",
-    caption = "Each dot = one country\nBox = distribution\nBlack line = population-weighted average"
+    caption = "Each dot = one country\nBlack line = population-weighted average\nColoured lines = median coverage"
   ) +
   theme_minimal(base_size = 12) +
   theme(
@@ -185,24 +187,24 @@ p <- ggplot(countries_long,
     panel.border       = element_rect(colour = "grey70",
                                       fill = NA, linewidth = .4),
     legend.position    = "bottom",
-    legend.box         = "horizontal",
     legend.text        = element_text(size = 10),
-    legend.spacing.x   = unit(0.5, "cm"),
     plot.title         = element_text(size = 12, face = "bold"),
     plot.subtitle      = element_text(size = 10, color = "grey50"),
-    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0),
-    strip.text         = element_text(face = "bold"),
+    plot.caption       = element_text(size = 10, color = "grey50", hjust = 0),
+    strip.text         = element_text(size = 11, face = "bold"),
+    axis.title.x       = element_text(size = 11, face = "bold"),
+    axis.title.y       = element_text(size = 11, face = "bold"),
     axis.text.x        = element_text(size = 11)
   )
 
 print(p)
 ```
 
----
+\newpage
 
 # Results and Interpretation
 
-The analysis reveals significant disparities in maternal health coverage between countries classified as "on-track" versus "off-track" for U5MR targets. On-track countries demonstrate substantially higher coverage of both ANC4 and SBA indicators compared to off-track countries, showing a clear positive correlation between maternal health service utilization and child survival outcomes. This suggests that comprehensive maternal health interventions, including antenatal care and skilled birth attendance, are essential for achieving positive child survival goals. The population-weighted analysis ensures that countries with larger populations have proportionally greater influence on the results, providing a more accurate representation of the global burden and impact of maternal health coverage gaps.
+The figure shows a clear trend where countries that are on track in terms of reaching the under-5 mortality (u5mr) targets are also more likely to have higher coverage for both health indicators, namely ANC4 and Skilled Birth Attendance. In countries with an on-track u5mr classification, about 93% of births are attended by a midwife, nurse, or doctor, but that percentage drops to 69% for u5mr off-track countries. The same is true for the other indicator, where about 73% of women in on-track countries have had at least 4 visits with a skilled health provider during pregnancy; that percentage again drops to 55% in off-track countries. These clear disparities could point to a broader lack of access to health services and a deteriorated health infrastructure in the u5mr off-track countries. This could suggest that health interventions in u5mr off-track countries, especially in high-birth countries, could significantly improve the health situation for the two indicators and others. It should be noted that some countries did not report their coverage values for the period 2018-2022. Specifically, only 87 out of 200 countries had coverage values for ANC4, while 150 countries had values for the same period for Skilled Birth Attendance. In the calculation of the weighted average of each indicator, the countries with missing values were not taken into consideration.
 
 ---
 
