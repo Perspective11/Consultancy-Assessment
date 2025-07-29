@@ -209,3 +209,15 @@ The figure shows a clear trend where countries that are on track in terms of rea
 ---
 
 *This report was generated on `r Sys.Date()` using data from the UNICEF MNCH database and UN Population Division estimates.*
+
+\newpage
+
+# Job Application Information
+
+This analysis was prepared as part of the **UNICEF Data and Analytics technical evaluation** for education.
+
+**Primary Position Applied For:**
+- Household Survey Data Analyst Consultant – Req. #581656
+
+**Additional Position of Interest:**
+- Administrative Data Analyst – Req. #581696
